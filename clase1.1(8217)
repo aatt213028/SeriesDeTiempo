@@ -1,0 +1,8 @@
+install.packages("readxl")
+library(readxl)
+rates<-read_excel("C://Users//SALA-F12//Downloads//rates.xlsx")
+
+#declaramos como series de tiempo
+rates.ts<-ts(rates,frequency = 1,start=(1)) #ts es funcion de r: time series
+
+plot(rates.ts,ylab="Rates",xlab="Periodo",main="Paridad peso/dolar",col=2)
