@@ -1,0 +1,52 @@
+x<-1:25      #vector de 1 a 25
+x            #leer x
+mean(x)      #media
+ls()         #listado lo que tenemos hasta ahora
+y<-2:19
+ls()
+
+#crear vectores:
+x2<-c(21,30,28)
+x4<-c(2.1,3.0,2.8)
+
+#otra forma de crear vectores con secuencia:
+y2<-seq(8,80,4) #vector que empieza en 8, acaba en 80 y va de 4 en 4
+y4<-seq(2,20,2)
+
+#longitud de un vector:
+length(y2)
+
+#crear funciones:
+media<-sum(x)/length(x)
+
+#remover:
+rm(x4)
+
+ls()
+#remover todo
+rm(list = ls())
+ls()
+
+#vector con caracter:
+nse<-c("alto","medio","bajo")
+
+x<-rnorm(100)
+
+#graficar
+plot(x)
+
+b<-c(1:100)
+
+plot(b,x)
+
+y=x+rnorm(100,mean = 50,sd=0.5) #sd=standar direction
+cor(x,y)
+
+#operadores relacionales: <,>,<=,>=,==,!=
+8==7.999999999
+x==17
+x<=19
+
+#operaciones logicas: & (y), | (o)
+a<-21
+a[a<b & a<3]
