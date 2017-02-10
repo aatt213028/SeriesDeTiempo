@@ -1,0 +1,36 @@
+getwd()
+setwd("C://Users//SALA-F13//Documents//series")
+install.packages("foreign")
+library(foreign)
+
+datastata<-read.dta("C://Users//SALA-F13//Documents//series//clase1.dta")
+head(datastata)
+colnames(datastata) #nos da el nombre de las variables
+datastata[3,5] #valor de la fila 3 columna 5
+datastata[1:20,"edad"] #los primeros 20 valores de la variable edad
+datastata[c(1,5,7),2] #los valores 1,5,7 de la columna 2
+
+colnames(datastata)[2]<-"ingreso" #renombrar la columna dos como "ingreso"
+colnames(datastata)
+
+#Descriptivos
+summary(datastata) #estadisticos descriptivos
+save(datastata,file = ("C://Users//SALA-F13//Documents//series//amd.RData")) #guardar
+load("~//amd.RData")
+
+
+install.packages("haven")
+library(haven)
+
+clase1<-read_dta("C://Users//SALA-F13//Documents//series//clase1.dta")
+
+
+#########################
+install.packages("readxl")
+library(readxl)
+petroleo<-read_excel("C://Users//SALA-F13//Documents//series//petroleo.xlsx")
+
+#declaramos como series de tiempo
+petroleo.ts<-ts(petroleo,frequency = 1,start=(0)) #ts es funcion de r: time series
+
+plot(petroleo.ts,ylab="datos",xlab="Periodo",main="Petroleo",col=2)
