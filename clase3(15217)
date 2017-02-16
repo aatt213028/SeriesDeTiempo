@@ -7,6 +7,7 @@ library(foreign)
 install.packages("readxl")
 library(readxl)
 
+######################################################################
 petroleo<-read_excel("C://Users//salaf-15//Documents//series//petroleo.xlsx")
 petroleo.ts<-ts(petroleo)
 plot(petroleo.ts, xlab="precio", ylab="litros", main="Petroleo", col="red")
@@ -26,3 +27,16 @@ plot(diff(petroleo.descom$seasonal)) #ir llamando a la ventana...
 plot(diff(petroleo.descom$trend))    #....
 plot(diff(petroleo.descom$random))   #...
 plot(petroleo.descom)
+
+#####################################################################
+pib<-read_excel("C://Users//salaf-15//Documents//series//gdpmexico.xlsx")
+pib.ts<-ts(pib)
+plot(pib.ts, xlab="periodo", ylab="PIB", main="PIB en México", col="blue")
+pib.ts=ts(pib,frequency = 5)
+pib.descom<-decompose(pib.ts, "additive")
+pib.descom<-decompose(pib.ts, "multiplicative")
+#GRAFICOS
+plot(as.ts(pib.descom$seasonal)) #grafica(como serie de tiempo(petroleo.descom$estacional))
+plot(as.ts(pib.descom$trend)) #grafica(como serie de tiempo(petroleo.descom$tendencia))
+plot(as.ts(pib.descom$random)) #grafica(como serie de tiempo(petroleo.descom$aleatorio))
+plot(pib.descom) #grafico descompuesto
