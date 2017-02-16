@@ -1,0 +1,31 @@
+getwd()
+setwd("C://Users//SalaD-9//Documents")
+
+install.packages("foreign")
+library(foreign)
+
+install.packages("readxl")
+library(readxl)
+
+amx<-read_excel("C://Users//SalaD-9//Documents//amx.xlsx")
+amx.ts<-ts(amx)
+plot(amx.ts, xlab="periodo en días", ylab="precio", main="America Móvil", col="purple")
+amx.ts=ts(amx,frequency = 10)
+#descomponerlo en sus diferentes componentes
+amx.descom<-decompose(amx.ts, "additive") 
+amx.descom<-decompose(amx.ts, "multiplicative") 
+
+#GRAFICOS
+plot(as.ts(amx.descom$seasonal)) #grafica(como serie de tiempo(petroleo.descom$estacional))
+plot(as.ts(amx.descom$trend)) #grafica(como serie de tiempo(petroleo.descom$tendencia))
+plot(as.ts(amx.descom$random)) #grafica(como serie de tiempo(petroleo.descom$aleatorio))
+plot(amx.descom) #grafico descompuesto
+
+locator() #obtener datos de x,y de un punto de la gráfica
+
+windows() #llamar una ventana
+par(mfrow=c(3,1)) #dividir la ventana
+plot(diff(amx.descom$seasonal)) #ir llamando a la ventana...
+plot(diff(amx.descom$trend))    #....
+plot(diff(amx.descom$random))   #...
+plot(amx.descom)
