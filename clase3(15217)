@@ -1,0 +1,22 @@
+getwd()
+setwd("C://Users//salaf-15//Documents//series")
+
+install.packages("foreign")
+library(foreign)
+
+install.packages("haven")
+library(haven)
+
+install.packages("readxl")
+library(readxl)
+
+petroleo<-read_excel("C://Users//salaf-15//Documents//series//petroleo.xlsx")
+petroleo.ts<-ts(petroleo)
+plot(petroleo.ts, xlab="precio", ylab="litros", main="Petroleo", col="red")
+petroleo.ts=ts(petroleo,frequency = 5)
+petroleo.descom<-decompose(petroleo.ts, "additive") #descomponerlo en sus diferentes componentes
+#GRAFICOS
+plot(as.ts(petroleo.descom$seasonal)) #grafica(como serie de tiempo(petroleo.descom$estacional))
+plot(as.ts(petroleo.descom$trend)) #grafica(como serie de tiempo(petroleo.descom$tendencia))
+plot(as.ts(petroleo.descom$random)) #grafica(como serie de tiempo(petroleo.descom$aleatorio))
+plot(petroleo.descom) #grafico descompuesto
