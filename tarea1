@@ -20,12 +20,3 @@ plot(as.ts(amx.descom$seasonal)) #grafica(como serie de tiempo(petroleo.descom$e
 plot(as.ts(amx.descom$trend)) #grafica(como serie de tiempo(petroleo.descom$tendencia))
 plot(as.ts(amx.descom$random)) #grafica(como serie de tiempo(petroleo.descom$aleatorio))
 plot(amx.descom) #grafico descompuesto
-
-locator() #obtener datos de x,y de un punto de la gráfica
-
-windows() #llamar una ventana
-par(mfrow=c(3,1)) #dividir la ventana
-plot(diff(amx.descom$seasonal)) #ir llamando a la ventana...
-plot(diff(amx.descom$trend))    #....
-plot(diff(amx.descom$random))   #...
-plot(amx.descom)
