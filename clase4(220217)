@@ -1,0 +1,33 @@
+######################################ESTACIONARIEDAD########################################################
+install.packages("readxl")
+library(readxl)
+
+petroleo <- read_excel ("C://Users//SALA-F13//Documents//series//petroleo.xlsx")
+rates <- read_excel ("C://Users//SALA-F13//Documents//series//rates.xlsx")
+
+petroleo.ts<-ts(petroleo) #para que r lo lea como serie de tiempo
+
+install.packages("tseries") #encontrar estadisticos y estacionariedad
+library(tseries)
+
+acf(petroleo.ts, lag=20, plot = FALSE)
+
+acf(petroleo.ts, plot = TRUE) #con grafico, por default r indica lag=20
+
+
+###KPSS=Kwiatkowski Phillips Schmidt Shin (test para nivel de estacionariedad)
+
+petroleo.log<-log(petroleo.ts) #transformacion logaritmica de la serie de tiempo
+
+kpss.test(petroleo.log) #detectar estacionariedad en una serie
+#si p-value es menor a 0.05 es NO estacionaria
+
+
+###t de Dickey Fuller aumentada
+
+adf.test(petroleo.log,alternative = "stationary")
+#si p-value es menor a 0.05 es estacionaria
+
+
+###box test
+
