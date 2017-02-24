@@ -1,0 +1,33 @@
+install.packages("foreign")
+library(foreign)
+
+install.packages("readxl")
+library(readxl)
+
+base<-read.dta("C://Users//salaf-15//Documents//series//base.dta") #esta desactualizado r
+
+base<-read_excel("C://Users//salaf-15//Documents//series//base.xlsx")
+
+View(base)
+
+#REGRESION LINEAL
+base.lm<-lm(peso~talla,base) #el peso depende de la talla, de donde se extrajeron los datos
+
+#Extraemos los coeficientes (betas)
+betas=coefficients(base.lm); betas #beta 1 
+
+#Coeficiente de determinacion
+summary(base.lm)$r.squared #el peso depende de la talla
+
+#PRUEBA DE FISHER
+#...alguna asocianion significativa entre x y y bajo la hipotesis nula de que beta es igual a cero, si es <0.05 es ho
+summary(base.lm)
+
+#Valores predichos IC95%
+predict(base.lm, interval = "predict", level = 0.95)
+
+#Grafico de Residuos
+loquesobra<-residuals(base.lm)
+plot(jitter(loquesobra)~jitter(talla),ylab = "Residuos",xlab="Talla", data = base)
+abline(0,0,col="pourple")
+summary(loquesobra)
