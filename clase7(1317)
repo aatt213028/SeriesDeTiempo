@@ -1,0 +1,33 @@
+#regresion con series de tiempo (Yt) y una variable predictora (xt)
+#tslm adaptación de modelos
+indicators<-read_excel("C://Users//salaf-15//Documents//series//indicators.xlsx")
+
+install.packages("forecast")
+library(forecast)
+
+indicators.ts<-ts(gdp,data = indicators) #no lo encuentra
+#del indicators lo transforme en indicators.ts
+
+indicators.ts<-ts(co2, data = indicators) #lo trae a la memoria el anterior y lo guarda como 't', y esta es 'y'. recupera el anterior
+
+plot(indicators.ts)
+
+estimado.ts<-tslm(gdp_capita~co2,data=indicators.ts) #'y(t)' es gdp y 'x(t)' es co2, con el data le digo que con esos datos haga la regresión
+summary(estimado.ts)
+
+
+#FUNCION NO LINEAL (log-log)
+par(mfrow=c(1,2))
+estimado.ts2<-lm(log(gdp_capita)~(co2),data = indicators.ts)
+summary(estimado.ts2)
+windows()
+plot(jitter(gdp_capita)~jitter(co2),xlab="Toneladas de co2", ylab="Gross Domestic Product",data = indicators.ts)
+#si no sale el grafico poner antes del plot "windows()", que le indica a r que se olcide de la división en la parte visual y manda a la grafica en una ventana sola
+
+lines(1:54, exp(estimado.ts2$coef[1]+estimado.ts2$coef[2]*log(1:54)))
+plot(log(jitter(gdp_capita))~log(jitter(co2)),xlab="log(co2)",ylab = "log(gdp)",data = indicators.ts)
+abline(estimado.ts2,col="red")
+
+#RESIDUOS (log-log)
+residuos.log<-residuals(estimado.ts2)
+plot(jitter(residuos.log, amount=.005)~jitter(log(co2)),ylab = "Residuos",xlab="log(co2)",data = indicators.ts,col="blue")
