@@ -1,0 +1,33 @@
+#stl() da la tendencia, estacionalidad, aleatoriedad
+#####################
+library(readxl)
+consumo <- read_excel("C://Users//salaf-15//Documents//series//ejemplo3.xlsx")
+
+install.packages("forecast") #paquete para proyecciones: funcion(stl)
+library(forecast)
+
+consumo.ts<-ts(consumo,start = c(1910,1),frequency = 12) #ts(loquequieroqueseaseriedetiempo,start=(cuandocomenzar,deunoenuno),frecuency=12mesesporaño)
+plot(consumo.ts,xlab="Periodo de tiempo",ylab="Consumo medio de productos",main="Consumo medio de productos",col="purple")
+
+consumo.descom<-decompose(consumo.ts,"multiplicative") #descompose(laseriequequierodescomponer,metodomultiplicativo)
+
+cycle(consumo.ts)
+#Detectando patrón estacional:
+boxplot(consumo.ts~cycle(consumo.ts))
+
+par(mfrow=c(1,3))
+plot(consumo.descom$seasonal)
+plot(consumo.descom$trend)
+plot(consumo.descom$random)
+x11() #igual que windows()
+
+#Extraer tendencia (Tt) con el metodo loose, funcion(stl)
+consumo.ts<-ts(consumo[1:56,1],frequency=12,start = c(1910,1))
+class(consumo.ts)
+View(consumo.ts)
+
+consumo.stl<-stl(consumo.ts,s.window = "periodic")
+names(consumo.stl)
+consumo.stl
+
+consumo.tend<-consumo.stl$time.series[,2]
