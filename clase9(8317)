@@ -1,0 +1,64 @@
+#####################
+library(readxl)
+consumo <- read_excel("C://Users//salaf-15//Documents//series//ejemplo3.xlsx")
+
+install.packages("forecast") #paquete para proyecciones: funcion(stl)
+library(forecast)
+
+consumo.ts<-ts(consumo,start = c(1910,1),frequency = 12) #ts(loquequieroqueseaseriedetiempo,start=(cuandocomenzar,deunoenuno),frecuency=12mesesporaño)
+plot(consumo.ts,xlab="Periodo de tiempo",ylab="Consumo medio de productos",main="Consumo medio de productos",col="purple")
+
+consumo.descom<-decompose(consumo.ts,"multiplicative") #descompose(laseriequequierodescomponer,metodomultiplicativo)
+#una serie de tiempo es multiplicativa: economica,
+
+cycle(consumo.ts)
+#Detectando patrón estacional:
+boxplot(consumo.ts~cycle(consumo.ts))
+
+plot(consumo.descom$seasonal)
+plot(consumo.descom$trend)
+plot(consumo.descom$random)
+plot(consumo.descom)
+x11() #igual que windows()
+
+#Extraer tendencia (Tt) con el metodo loess, funcion(stl)
+consumo.ts<-ts(consumo[1:56,1],frequency=12,start = c(1910,1), end = c(1915,8))
+class(consumo.ts)
+View(consumo.ts)
+
+dim(consumo)
+
+consumo.stl<-stl(consumo.ts,s.window = "periodic", robust = T)
+names(consumo.stl)
+consumo.stl
+
+consumo.tend<-consumo.stl$time.series[,2]
+consumo.tend
+
+plot(consumo.ts,col="purple",main="Consumo de productos",ylab="Tendencia",xlab="Periodo")
+lines(consumo.stl$time.series[,2],col="blue",ylab="Tendencia")
+
+#Eliminar Tendencia (Tt) de Yt
+consumo.sntend<-consumo.ts/consumo.descom$trend #se divide porque arriba indicamos que es multiplicativa, cuando sea aditivo se resta
+plot(as.ts(consumo.sntend,col="red"))
+#eliminamos la tendencia porque graficamente no hay tendencia
+
+par(mfrow=c(1,2))
+plot(consumo.ts,col="blue")
+plot(consumo.sntend,col="purple")
+
+#AJUSTE ESTACIONAL
+
+#Estacionalidad: movimientos recurrentes por encima y por debajo de la línea de tendencia y su patrón se repite año con año.
+#Ciclicidad: variaciones oscilatorias alrededor de la línea
+#Para un modelo aditivo=Yt-Et y para un modelo multiplicativo=Yt/Et
+
+install.packages("fpp")
+library(fpp)
+
+plot(consumo.ts)
+plot(consumo.stl)
+
+monthplot(consumo.stl$time.series[,"seasonal"],main="Componente estacional por meses",col="purple",ylab = "Componente estacional")
+
+plot(consumo.ts,col="black",main="Ajuste estacional",xlab="Periodo",ylab="indice estacional"......)
