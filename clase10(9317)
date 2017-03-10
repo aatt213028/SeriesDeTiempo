@@ -1,0 +1,39 @@
+#Canada x11-arima
+ 
+#PROMEDIO MÓVIL
+#Moving Average (MA)
+
+install.packages("fpp")
+library(fpp)
+install.packages("readxl")
+library(readxl)
+
+ventas<-read_excel("C://Users//SALAF-16//Documents//Series de tiempo//ma.xlsx")
+
+ma(ventas,order=3) #ma=moving average
+ma(ventas,order=5)
+ma(ventas,order=7)
+ma(ventas,order=9)
+
+ventas.ts<-ts(ventas, start = c(1990))
+
+plot(ventas.ts, main="Ventas de empresa", ylab="Toneladas",xlab="Año")
+lines(ma(ventas.ts,3),col="purple")
+lines(ma(ventas.ts,5),col="red")
+lines(ma(ventas.ts,7),col="orange")
+lines(ma(ventas.ts,9),col="blue")
+
+
+#PROMEDIO MÓVIL CENTRADO
+
+ventas.ts2<-window(ventas.ts, start=1990)
+
+ma4<- ma(ventas.ts2, order = 4, centre = FALSE)
+ma4x2<-ma(ventas.ts2,order = 4, centre = TRUE)
+
+ma4
+ma4x2
+
+plot(ventas.ts2, main="Ventas de empresa", ylab="Toneladas", xlab="Año")
+lines(ma4, col="purple")
+lines(ma4x2, col="red")
