@@ -1,0 +1,49 @@
+#naive con rwf son equivalentes
+vtas.meanf<-meanf(vtas.tspro, h=20) #calcula y guarda meanf
+vtas.naive<-naive(vtas.tspro, h=20) #calcula y guarda naive
+vtas.snaive<-snaive(vtas.tspro, h=20) #calcula y guarda snaive
+
+plot(vtas.meanf, plot.conf=FALSE, main = "Pronósticos del valor de venta") #plot.conf=grafica intervalos de confianza
+lines(vtas.naive$mean, col=2)
+lines(vtas.snaive$mean, col=3)
+legend("top", lty = 2, col = c(4,2,3), legend = c("Método de la media", "Método Naive", "Método Naive Estacional"))
+
+#si no acepta plot.conf poner shaded que significa sombrear
+
+
+###############################
+
+ipc<-read_excel("C://Users//SALAF-16//Documents//Series de tiempo//ipc.xlsx")
+
+ipc.ts<-ts(ipc, start = c(2010,1), frequency=12)
+
+plot(ipc.ts, xlab="Tiempo", ylab="Ventas en millones", main="Serie temporal")
+
+#MÉTODO DE LA MEDIA
+#Average method
+
+meanf(ipc.ts,40) 
+
+#MÉTODO NAIVE
+#Ingenuo estacional
+
+naive(ipc.ts, 40)
+
+snaive(ipc.ts,40)
+
+#MÉTODO DERIVA
+#Drift method
+
+rwf(ipc.ts, 40, drift = TRUE)
+
+ipc.tsp<-window(ipc.ts,start=c(2010,1), frequency=12)
+
+
+ipc.meanf<-meanf(ipc.tsp, h=40)
+ipc.naive<-naive(ipc.tsp, h=40) 
+ipc.snaive<-snaive(ipc.tsp, h=40)
+
+plot(ipc.meanf, plot.conf=FALSE, main = "Pronósticos del IPC")
+lines(ipc.naive$mean, col=2)
+lines(ipc.snaive$mean, col=3)
+legend("top", lty = 2, col = c(4,2,3), legend = c("Método de la media", "Método Naive", "Método Naive Estacional"))
