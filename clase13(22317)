@@ -1,0 +1,31 @@
+install.packages("readxl")
+library(readxl)
+
+install.packages("forecast")
+library(forecast)
+
+base<- read_excel("C://Users//SALAF-16//Documents//Series de tiempo//base.xlsx")
+
+plot(jitter(consumo)~jitter(ingresos),xlab="Ingresos",ylab="Consumo",data = base)
+
+estimado<-lm(consumo~ingresos, data = base)
+
+abline(estimado, col="red")
+summary(estimado)
+
+#RESIDUOS
+
+residuos<-residuals(estimado)
+plot(jitter(residuos)~jitter(ingresos), ylab = "Residuos", xlab="Ingresos", data = base) #y=la que vamos a explicar
+abline(0,0,col="red")
+#sublayer valor que están muy distanciados de la mayoria
+
+#PRONÓSTICOS CON REGRESIÓN
+
+fitted(estimado)[1]
+
+pronosticos<-forecast(estimado, newdata = data.frame(ingresos=2000)) #el pronóstico lo pedimos en el ingreso 2000
+plot(pronosticos,xlab = "Ingresos",ylab = "Consumo")
+
+par(mfrow=c(1,2))
+estimado.l<-lm(log(consumo)~log(ingresos), data = base)
