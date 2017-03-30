@@ -1,0 +1,39 @@
+#REGRESIÓN Yt
+install.packages("forecast")
+library(forecast)
+
+library(readxl)
+datos<-read_excel("C://Users//SALAF-16//Documents//Series de tiempo//base.xlsx")
+#la volvemos serie de tiempo:
+datos.ts<-ts(datos)
+
+View(datos.ts) #si despliega los datos, entonces r lo guardó como serie de tiempo
+plot(datos.ts)
+#fn para hacer regresion con la serie de tiempo
+dtostsregre<-tslm(consumo~ingresos, data = datos.ts)
+summary(dtostsregre)
+
+pronosticos.1p<-forecast(dtostsregre, newdata = data.frame(ingresos=c(-1,1))) #dame pronosticos de -1 y 1
+summary(pronosticos.1p)
+#point forecasts=punto de pronostico
+plot(pronosticos.1p)
+
+
+#PRONOSTICOS LINEALES
+#hago pronosticos lineales porque veo una tendencia y no tiene una estacionalidad
+
+library(readxl)
+datos.2<-read_excel("C://Users//SALAF-16//Documents//Series de tiempo//toneladas.xlsx")
+
+datos.2ts<-ts(datos.2)
+
+pronlin<-tslm(datos.2ts~trend) #cuando solo tengo una var, entonces la segunda es la tendencia: tslm(y,x) donde x=tendencia
+
+#Horizonte:
+#cuántas observaciones más all+a de la última quiero que me pronostique
+pronlinh<-forecast(pronlin, h=15, level = c(80,95)) #si rechaza el level, solo tengo que borrarlo
+plot(pronlinh)
+
+lines(fitted(pronlinh), col="purple") #graficar los valores ajustados
+
+summary(pronlinh)
