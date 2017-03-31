@@ -1,0 +1,36 @@
+install.packages("forecast")
+library(forecast)
+
+library(readxl)
+multiple<-read_excel("C://Users//SALAF-16//Documents//Series de tiempo//multiple.xlsx")
+#multiple.ts<-ts(multiple)
+windows()
+pairs(multiple[,(1:5)]) #grafica la correlación en forma de matriz
+View(multiple)
+
+#como tiene algun cero, entonces se le aumenta uno:
+multiple.log<-data.frame(indice=multiple$indice, log.ahorro=log(multiple$ahorro+1),log.ingreso=log(multiple$ingreso+1),log.bienes=log(multiple$bienes+1),log.servicios=log(multiple$servicios+1))
+pairs(multiple.log[,(1:5)])
+
+estimado<-lm(indice~log.ahorro+log.ingreso+log.bienes+log.servicios, data = multiple.log)
+summary(estimado)
+estimado<-step(lm(indice~log.ahorro+log.ingreso+log.bienes+log.servicios, data = multiple.log)) #da valores de AIC
+summary(estimado)
+
+#none=modelo nulo, solo valora el intersepto
+#con los cuatro=modelo saturado, es el de mejor ajuste, acumula el mayor número de predictores
+
+plot(fitted(estimado),multiple.log$indice, ylab = "Indice", xlab = "Indice predicho")
+
+CV(estimado)
+
+#Residuos-predictores
+estimado<-lm(indice~log.ahorro+log.ingreso+log.bienes+log.servicios, data = multiple.log)
+par(mfrow=c(2,2))
+plot(multiple.log$log.ahorro,residuals(estimado),xlab = "log(ahorros)")
+plot(multiple.log$log.ingreso,residuals(estimado),xlab = "log(ingreso)")
+plot(multiple.log$log.bienes,residuals(estimado),xlab = "log(bienes)")
+plot(multiple.log$log.servicios,residuals(estimado),xlab = "log(servicios)")
+
+#Residuos-valores predichos
+plot(fitted(estimado),residuals(estimado),xlab = "Indice predicho",ylab = "Residuos")
