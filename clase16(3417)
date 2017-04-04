@@ -1,0 +1,25 @@
+install.packages("forecast")
+library(forecast)
+
+library(readxl)
+compras<-read_excel("C://Users//SALAF-16//Documents//Series de tiempo//base.xlsx")
+ #empieza enero 2000, es mensual entonces son 13 años y 7 meses
+
+compras.ts<-ts(compras, start = c(2000,1), end=c(2013,7), frequency = 12)
+plot(compras.ts, col="purple")
+
+descompuesta<-decompose(compras.ts, "multiplicative")
+plot(descompuesta)
+
+#Descomposicuón con ajuste estacional y de tendencia con la función stl()
+descompuesta.stl <- stl(compras.ts,t.window = 12, s.window = "periodic")
+
+plot(descompuesta.stl)
+
+pronosticos<-stl(compras.ts, t.window = 12, s.window = "periodic", robust = T) #robust es para que pase lo que pase r lo genere
+
+ajustada<- seasadj(pronosticos)
+plot(naive(ajustada))
+
+pronosticos.naive<-forecast(pronosticos, method="naive")
+plot(pronosticos.naive)
