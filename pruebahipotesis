@@ -1,0 +1,282 @@
+#Prueba binomial
+
+#Prueba de una muestra. H0: p=0.5 vs. Ha: p<>0.5
+
+binom.test(37, 58, p = 0.5,alternative =c("two.sided"),conf.level = 0.95) #c("two.sided", "less", "greater") correct=FALSE
+
+##########################################################################
+x<-rnorm(100,2,3)
+boxplot(x)
+t.test(x,mu=2,alternative=c("two.sided"),conf.level=0.95)
+
+norm.test<-function (x, mu, desviacion.estandar,
+alternativa = c("dos.colas", "menor", "mayor"), sd = desviacion.estandar){
+if (missing(desviacion.estandar) && missing(sd))
+stop("Se debe especificar la desviación estándar de la población")
+
+alternativa <- match.arg(alternativa)
+n <- length(x)
+z <- (mean(x) - mu)/(sd/sqrt(n))
+p.value <- switch(alternativa, dos.colas= 2 * pnorm(abs(z),lower.tail = FALSE), menor = pnorm(z), mayor = 1 - pnorm(z))
+return(list(z=z,p.value=p.value))
+}
+
+
+norm.test(x,2,3,alternativa="dos.colas")
+
+
+#####################################################################################
+
+wilcox.test(x,mu=2,alternative=c("two.sided"),conf.level=0.95)
+
+#######################################################################################
+
+
+smokers  <- c( 83, 90, 129, 70 )
+patients <- c( 86, 93, 136, 82 )
+prop.test(smokers, patients)
+
+#######################################################################################################
+
+x1<-rnorm(100)
+x2<-rnorm(100,1,1)
+
+boxplot(x1,x2)
+
+plot(density(x1),xlab="",ylab="",col="blue")
+
+par(new=T)
+plot(density(x2),xlab="",ylab="",col="red")
+
+#Mas mejor
+
+library(lattice)
+pob<-factor(c(rep(1,100),rep(2,100)))
+x3<-c(x1,x2)
+
+datos<-data.frame(x3,pob)
+
+densityplot(~x3, data=datos,groups=pob,plot.points=TRUE,ref=FALSE)
+
+t.test(x1,x2,alternative=c("two.sided"),conf.level=0.95) #paired=T muestras pareadas
+
+#########################################################################################################
+### Probar supuestos para la prueba anterior. Poblaciones normales e igualdad de varianzas
+
+shapiro.test(x1)
+
+shapiro.test(x2)
+
+var.test(x1,x2,alternative=c("two.sided"),conf.level=0.95)
+
+#########################################################################################################
+### Alternativa no paramétrica
+
+wilcox.test(x1,x2,alternative=c("two.sided"),conf.level=0.95)
+
+##########################################################################################################
+### Prueba de independencia
+
+x <- matrix(c(12, 5, 7, 7), ncol = 2, nrow=2)
+chtest<-chisq.test(x,correct = TRUE) #correct=TRUE es el dafault
+chtest$p.value
+chisq.test(x,simulate.p.value=TRUE,B=10000)$p.value
+chtest$observed
+chtest$expected
+chtest$residuals
+
+### Es recomendable usar la Ji-cuadrada???
+###########################################################################################
+
+#Ji-cuadrada de bondad de ajuste (homogeneidad)
+# Simulacion de un dado honesto
+
+dados= sample(1:6,200,p=c(1,1,1,1,1,1)/6,replace=T)
+dd<-table(dados)
+
+### Prueba de bondad de ajuste (homogeneidad)
+
+chisq.test(dd,p=c(1,1,1,1,1,1)/6)
+chisq.test(x, p=p, simulate.p.value = TRUE, B = 10000)$p.value
+
+#############################################################################
+### Prueba exacta de Fisher
+
+x <- matrix(c(12, 5, 7, 7), ncol = 2)
+fisher.test(x)
+fisher.test(x)$p.value
+fisher.test(x, simulate.p.value=TRUE, B=10000)
+
+##############################################################################
+### Correlacion
+
+x <- c(44.4, 45.9, 41.9, 53.3, 44.7, 44.1, 50.7, 45.2, 60.1)
+y <- c( 2.6,  3.1,  2.5,  5.0,  3.6,  4.0,  5.2,  2.8,  3.8)
+
+cor.test(x, y,alternative = c("two.sided"),method = c("pearson"), conf.level = 0.95)
+
+
+cor.test(x, y,alternative = c("two.sided"),method = c("spearman"),
+         exact = FALSE, conf.level = 0.95) #Intervalo de confianza solo para la alternativa pearson
+         
+cor.test(x, y,alternative = c("two.sided"),method = c("spearman"),
+         exact = TRUE, conf.level = 0.95)
+         
+##############################################################################
+#### Igualdad de varianza para 3 poblaciones
+library(pgirmess)
+
+x<-cbind(rnorm(50),rnorm(50,1,1),rnorm(50,2,1))
+grupo<-factor(c(rep(0,50),rep(1,50),rep(2,50)))
+
+boxplot(x[,1],x[,2],x[,3])
+
+library(lattice)
+
+x1<-c(x[,1],x[,2],x[,3])
+
+datos1<-data.frame(x1,grupo)
+
+densityplot(~x1, data=datos1,groups=grupo,plot.points=TRUE)
+
+library(stats)
+
+bartlett.test(x1,grupo)
+
+bartlett.test(x1~grupo,data=datos1)
+
+library(car)
+
+levene.test(x1,grupo)
+
+levene.test(x1~grupo, data=datos1)
+
+fligner.test(x1,grupo) #Prueba no parametrica por rangos
+
+fligner.test(x1,grupo,data=datos1)
+
+friedman.test(x,grupo) 
+
+friedmanmc(x,grupo) 
+
+##############################################################################
+
+
+
+resp<-c(0.44,0.44,0.54,0.32,0.21,0.28,0.7,0.77,0.48,0.64,0.71,0.75,0.8,0.76,0.34,0.80,0.73,0.8)
+categ<-as.factor(rep(c("A","B","C"),each=6))
+
+kruskal.test(resp,categ)
+
+kruskalmc(resp, categ)
+
+#kruskalmc(resp, categ, prob=0.02)# pa' controlar el nivel de sig. de las pruebas individuales
+
+
+x <- c(2.9, 3.0, 2.5, 2.6, 3.2) # normal subjects
+y <- c(3.8, 2.7, 4.0, 2.4)      # with obstructive airway disease
+z <- c(2.8, 3.4, 3.7, 2.2, 2.0) # with asbestosis
+fac<-factor(c(rep(1,5),rep(2,4),rep(3,5)))
+kruskal.test(c(x, y, z),fac)
+
+
+#############################################################################################
+x<-c(rnorm(50),rnorm(50,1,1),rnorm(50,2,1))
+grupo<-factor(c(rep(0,50),rep(1,50),rep(2,50)))
+
+boxplot(x~grupo)
+
+summary(ajuste<-aov(x~grupo))
+
+TukeyHSD(ajuste, "grupo", ordered = TRUE)
+plot(TukeyHSD(ajuste, "grupo"),col=c("red","blue","green")) #También se puede guardar como un objeto y usar plot(nombre objeto)
+
+##################################################################################################
+
+#Todas las distribuciones tienen media?
+
+pmovil<-function(x){
+n<-length(x)
+ret<-rep(0,n)
+for (k in 1:n){ret[k]<-mean(x[1:k])}
+return(ret)
+}
+x<-rnorm(10000)
+#x<-rcauchy(10000)
+plot(pmovil(x),type="l")
+abline(h=0)
+
+########################################################################################################
+
+#Rumbo a bondad de ajuste
+
+x<-rnorm(500)
+
+par(mfrow=c(1,2))
+
+plot(density(x),col="blue")
+
+curve(dnorm(x),from=-3,to=3,add=T,col="green")
+
+plot(ecdf(x),lty=1)
+
+curve(pnorm(x),from=-3,to=3,add=T,col="violet")
+
+#Exploracion grafica
+
+qqnorm(x)
+qqline(x, col="violet")
+
+y<-rt(100,9)
+plot(qt(ppoints(y),9),sort(y))
+abline(c(0,1),col="blue")
+
+z<-rexp(100)
+plot(qexp(ppoints(z),1),sort(z))
+abline(c(0,1),col="green")
+
+
+hist(x,prob=T)
+
+lines(density(x),col="green")
+
+
+#Pruebas formales para normalidad
+
+library(nortest)
+
+c(shapiro.test(x),ks.test(x,"pnorm",m=0,sd=1), sf.test(x), ad.test(x),cvm.test(x),lillie.test(x),pearson.test(x))
+
+library(ADGofTest)
+x<-rweibull(100,2,3)
+ad.test(x,pweibull,2,3)
+
+p<-rpois(100,3)
+ad.test(p,ppois,3)
+
+
+#Estimacion de los parametros de una distribucion
+
+library(MASS)
+
+x<-rnorm(100,10,4)
+
+fitdistr(x, "normal")
+
+w<-rweibull(100,3,10)
+
+fitdistr(w,"Weibull")
+
+e<-rexp(3)
+
+fitdistr(e,"exponential")
+
+################## El teorema central del límite dinámico
+
+library(TeachingDemos)
+library(tcltk)
+vis.binom()
+
+############Explorando la verosimilitud
+
+mle.demo()
