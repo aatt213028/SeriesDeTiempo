@@ -4,10 +4,33 @@
 
 binom.test(37, 58, p = 0.5,alternative =c("two.sided"),conf.level = 0.95) #c("two.sided", "less", "greater") correct=FALSE
 
+#Exact binomial test
+
+#data:  37 and 58
+#number of successes = 37, number of trials = 58, p-value = 0.04794
+#alternative hypothesis: true probability of success is not equal to 0.5 Entonces se rechaza la Ho
+#95 percent confidence interval:
+#  0.5011790 0.7600792
+#sample estimates:
+#  probability of success 
+#0.637931 
+
 ##########################################################################
-x<-rnorm(100,2,3)
+x<-rnorm(100,2,3) #100 datos, conmedia 2 y desviacion estandar 3
+x
 boxplot(x)
 t.test(x,mu=2,alternative=c("two.sided"),conf.level=0.95)
+
+#One Sample t-test
+
+#data:  x
+#t = -0.70881, df = 99, p-value = 0.4801 Entonces no rechazo la Ho
+#alternative hypothesis: true mean is not equal to 2
+#95 percent confidence interval:
+#  1.158633 2.398469
+#sample estimates:
+#  mean of x 
+#1.778551
 
 norm.test<-function (x, mu, desviacion.estandar,
 alternativa = c("dos.colas", "menor", "mayor"), sd = desviacion.estandar){
@@ -24,18 +47,46 @@ return(list(z=z,p.value=p.value))
 
 norm.test(x,2,3,alternativa="dos.colas")
 
+#$z
+#[1] -0.7381637
+
+#$p.value
+#[1] 0.460415 Entonces no rechazo la Ho
+
+
 
 #####################################################################################
 
 wilcox.test(x,mu=2,alternative=c("two.sided"),conf.level=0.95)
 
+#Wilcoxon signed rank test with continuity correction, valido bajo xx pequeñas
+
+#data:  x
+#V = 2235, p-value = 0.3195 Entonces no se rechaza la Ho
+#alternative hypothesis: true location is not equal to 2
+
+mean(x)
+#[1] 1.778551
+
+median(x)
+#[1] 1.845685
+#son similares la media con la mediana
 #######################################################################################
 
 
 smokers  <- c( 83, 90, 129, 70 )
 patients <- c( 86, 93, 136, 82 )
+boxplot(smokers,patients)
 prop.test(smokers, patients)
 
+#4-sample test for equality of proportions without continuity correction
+
+#data:  smokers out of patients
+#X-squared = 12.6, df = 3, p-value = 0.005585 Entonces se rechaza la Ho
+#alternative hypothesis: two.sided
+#sample estimates:
+#  prop 1    prop 2    prop 3    prop 4 
+#0.9651163 0.9677419 0.9485294 0.8536585 
 #######################################################################################################
 
 x1<-rnorm(100)
@@ -45,34 +96,66 @@ boxplot(x1,x2)
 
 plot(density(x1),xlab="",ylab="",col="blue")
 
-par(new=T)
+par(new=T) #añadir gráfica
 plot(density(x2),xlab="",ylab="",col="red")
 
 #Mas mejor
 
 library(lattice)
-pob<-factor(c(rep(1,100),rep(2,100)))
+pob<-factor(c(rep(1,100),rep(2,100))) #crear factores, repetir 1 100 veces en un vector y en ese mismo vector repetir 2 100 veces
 x3<-c(x1,x2)
+pob
 
 datos<-data.frame(x3,pob)
+datos
 
 densityplot(~x3, data=datos,groups=pob,plot.points=TRUE,ref=FALSE)
 
 t.test(x1,x2,alternative=c("two.sided"),conf.level=0.95) #paired=T muestras pareadas
+#Welch Two Sample t-test
+#data:  x1 and x2
+#t = -7.8269, df = 196.16, p-value = 3.044e-13 Entonces rechazo Ho
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+#  -1.4045336 -0.8391877
+#sample estimates:
+#  mean of x   mean of y 
+#-0.07323729  1.04862336
+
 
 #########################################################################################################
 ### Probar supuestos para la prueba anterior. Poblaciones normales e igualdad de varianzas
 
 shapiro.test(x1)
+#Shapiro-Wilk normality test
+#data:  x1
+#W = 0.99294, p-value = 0.8842 Entonces no rechazo Ho
 
 shapiro.test(x2)
+#Shapiro-Wilk normality test
+#data:  x2
+#W = 0.98007, p-value = 0.1346 Entonces no rechazo Ho
 
 var.test(x1,x2,alternative=c("two.sided"),conf.level=0.95)
+#F test to compare two variances
+#data:  x1 and x2
+#F = 0.82335, num df = 99, denom df = 99, p-value = 0.3351 Entonces no rechazo Ho
+#alternative hypothesis: true ratio of variances is not equal to 1
+#95 percent confidence interval:
+#  0.5539809 1.2236833
+#sample estimates:
+#  ratio of variances 
+#0.8233451
 
 #########################################################################################################
 ### Alternativa no paramétrica
 
 wilcox.test(x1,x2,alternative=c("two.sided"),conf.level=0.95)
+#Wilcoxon rank sum test with continuity correction
+#data:  x1 and x2
+#W = 2100, p-value = 1.394e-12 Entonces rechazo Ho
+#alternative hypothesis: true location shift is not equal to 0
+
 
 ##########################################################################################################
 ### Prueba de independencia
@@ -80,10 +163,26 @@ wilcox.test(x1,x2,alternative=c("two.sided"),conf.level=0.95)
 x <- matrix(c(12, 5, 7, 7), ncol = 2, nrow=2)
 chtest<-chisq.test(x,correct = TRUE) #correct=TRUE es el dafault
 chtest$p.value
+#[1] 0.4233054
 chisq.test(x,simulate.p.value=TRUE,B=10000)$p.value
+#[1] 0.2914709
 chtest$observed
+#      [,1] [,2]
+#[1,]   12    7
+#[2,]    5    7
 chtest$expected
+#       [,1]     [,2]
+#[1,] 10.419355 8.580645
+#[2,]  6.580645 5.419355
 chtest$residuals
+#       [,1]       [,2]
+#[1,]  0.4896818 -0.5396031
+#[2,] -0.6161694  0.6789856
+x
+#      [,1] [,2]
+#[1,]   12    7
+#[2,]    5    7
+#Entonces no rechazo Ho
 
 ### Es recomendable usar la Ji-cuadrada???
 ###########################################################################################
