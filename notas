@@ -1,0 +1,11 @@
+#Estacionalidad: se repite
+#Estacionaria: si el correlograma esta dentro del intervalo de confianza
+
+
+#según el correlograma el retraso 4 no es estacionario, estadisticamente no significativa
+#pj, si es trimestral, entonces me debo dijar en los retrasos 4,8,12,16..si sale no significativo en el retraso 1,2 o 3 se dice que se tiene no significativo de orden 1
+#comparar AICc, el de menor valor es el de mayor ajuste
+#fn de autocorrelación -> AR()          ... el valor en yt esta relacionado (determinado por) con el valor anterior (yt-1)
+#fn de autocorrelación parcial -> MA()  ...
+#mis terminos aleatorios deben distribuirse como ruido blaco, lo checo en Box-Ljung, el p-value deben ser mayor a 0.05
+#lag=retraso
