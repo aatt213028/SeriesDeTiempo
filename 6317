@@ -1,0 +1,108 @@
+##############
+#Ejemplos
+
+library(readxl)
+ventas <- read_excel("C://Users//USUARIO//Documents//clases//time-series//clases//tendency//ejemplo.xlsx")
+
+ventas.ts <- ts(ventas, start=c(2012,1), frequency=6)
+plot(ventas.ts, xlab="Periodo de tiempo", ylab="Ventas en millones", main="Ventas en millones de euros", col="blue")
+
+ventas.descom <- decompose(ventas.ts, "additive")
+
+cycle(ventas.ts)
+#Detectando el comportamiento de las "ventas" en cada bimestre. R agrupa los bimestres y por eso encontrar�n 6 diagramas de caja,
+#correspondientes a los 6 bimestres de cada a�o. 
+boxplot(ventas.ts ~ cycle(ventas.ts))
+
+#graficamos los componentes de acuerdo con la funci�n decompose
+plot(as.ts(ventas.descom$seasonal))
+plot(as.ts(ventas.descom$trend))
+plot(as.ts(ventas.descom$random))
+plot(ventas.descom)
+
+#Graficamos la funci�n de acuerdo con las variables que obtuvimos de la funcion decompose. En primer t�rmino le indicamos a R que forme 
+#un vector de una fila por tres columnas.
+par(mfrow= c(1,3))
+plot(ventas.descom$seasonal)
+plot(ventas.descom$trend)
+plot(ventas.descom$random)
+
+#Extraer tendencia (Tt) con el m�todo loose, funcion(stl)
+#Estamos dici�ndole a R que "ventas" es un vector de 24 filas [1:24,1]
+ventas1.ts <- ts(ventas [1:24, 1], frequency=6, start=c(2012,1))
+class(ventas1.ts)
+View(ventas1.ts)
+
+#Investigar qu� es "s.window", "t.window" en CRAN
+ventas.stl <- stl(ventas1.ts, s.window= "periodic")
+names (ventas.stl)
+ventas.stl
+
+#Pedimos "traer" la columna 2 del objeto ventas.stl que es una serie de tiempo: ventas.stl$time.series
+ventas.tend <- ventas.stl$time.series [,2]
+ventas.tend
+
+#Grafica que contiene la serie de tiempo "ventas1.ts"
+plot(ventas1.ts, col="blue", main="Ventas en millones de euros", ylab= "Valores de la tendencia", xlab="Periodo")
+#Pedimos que sobreponga al gr�fico anterior una l�nea que representa la tendencia (Tt) de la serie de tiempo: ventas.stl$time.series
+lines(ventas.stl$time.series[,2], col="red", ylab="Tendencia")
+
+
+############## Regresion con series de tiempo (Yt) y una variable predictora (xt)
+#Funcion (tslm)
+#Se utiliza para adaptar modelos lineales a series temporales incluyendo componentes de tendencia y estacionalidad
+#tslm(formula, data, subset, lambda=NULL, biasadj=FALSE, ...)
+
+library(readxl)
+indicators <- read_excel("C://Users//USUARIO//Documents//clases//time-series//clases//tendency//indicators.xlsx")
+
+install.packages("forecast")
+library(forecast)
+
+?tslm
+
+#Tiene que verificarse pero el argumento es que R considera en segunda instancia a la columna gdp(yt) como t y a la columna co2(xt) como y.
+indicators.ts <- ts(gdp, data=indicators)
+indicators.ts <- ts(co2, data=indicators)
+
+View(indicators.ts)
+plot(indicators.ts)
+
+#En esta l{inea le decimos a R que los datos para el modelo de regresi�n provienen del �objeto? "indicators.ts" 
+estimado.ts <- tslm(gdp ~ co2, data=indicators.ts)
+#Con summary() le pedimos a R que nos proporcione un resumen del mdoelo estimado.
+#Christian revis�n una table F y parece que tuvimos problemas con la interpretaci�n del valor cr�tico. Revisen lo que dije cuando corr�mos
+#por primera vez el estad�stico de Fisher y comparen con los valores de una tabla F. 
+summary(estimado.ts)
+
+#Graficamos el modelo de regresi�n
+plot(gdp ~ co2, data=indicators.ts,
+     ylab="Producto Interno Bruto", xlab="Toneladas de CO2")
+abline(estimado.ts, col="blue")
+
+###Calcular residuos (Alumnos)
+###Les toca
+
+#######################################################################
+#Funcion no lineal (log-log)
+par(mfrow=c(1,2))
+estimado.ts2 <- lm(log(gdp) ~ log(co2), data=indicators.ts)
+summary(estimado.ts2)
+plot(jitter(gdp) ~ jitter(co2), xlab="Toneladas de CO2",
+     ylab="Gross Domestic Product", data=indicators.ts)
+lines(1:54, exp(estimado.ts2$coef[1]+estimado.ts2$coef[2]*log(1:54)))
+plot(log(jitter(gdp)) ~ log(jitter(co2)),
+     xlab="log(CO2)", ylab="log(GDP)", data=indicators.ts)
+abline(estimado.ts2, col="red")
+
+#Residuos (log-log)
+residuos.log <- residuals(estimado.ts2)
+plot(jitter(residuos.log, amount=.005) ~ jitter(log(co2)),
+     ylab="Residuos", xlab="log(co2)", data=indicators.ts, col="blue")
+
+
+#####################################################################
+###TAREA
+#1. Grafiquen los residuos.
+#2. Prueba estad�stica de los residuos.
+#3. Chequen los valores del estad�stico de Fisher
